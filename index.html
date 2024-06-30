@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Beverage ChatBot</title>
+    <style>
+    body { font-family: Arial, sans-serif; }
+    .chat-container { width: 400px; margin: 0 auto; }
+    .messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+    .input-box { width: 100%; padding: 10px; }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+    <div class="messages" id="messages"></div>
+    <input type="text" id="message-input" class="input-box" placeholder="Type a message...">
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const messageInput = document.getElementById('message-input');
+
+    socket.on('bot-message', (msg) => {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = 'Bot: ' + msg;
+        messages.appendChild(messageElement);
+        messages.scrollTop = messages.scrollHeight;
+    });
+
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+        const message = messageInput.value;
+        const messageElement = document.createElement('div');
+        messageElement.textContent = 'You: ' + message;
+        messages.appendChild(messageElement);
+        messages.scrollTop = messages.scrollHeight;
+        
+        socket.emit('user-message', message);
+        messageInput.value = '';
+        }
+    });
+    </script>
+</body>
+</html>
